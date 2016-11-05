@@ -9,15 +9,8 @@ module EnvChecker
     attr_accessor :configuration
 
     def check_environment_variables
-      if configuration.optional_variables
-        missing_keys = missing_keys_environment(configuration.optional_variables)
-        puts missing_keys # TODO: do something more.
-      end
-
-      if configuration.required_variables
-        missing_keys = missing_keys_environment(configuration.required_variables)
-        raise MissingKeysError.new(missing_keys) if missing_keys.any?
-      end
+      check_optional_variables &&
+        check_required_variables
     end
 
     def configure
@@ -27,7 +20,47 @@ module EnvChecker
 
     private
 
-    def missing_keys_environment(keys)
+    def check_optional_variables
+      if configuration.optional_variables
+        missing_keys = missing_keys_env(configuration.optional_variables)
+        log_message(:warning, "EnvChecker: Warning missing this optional
+          variables: [#{missing_keys}]")
+
+        return missing_keys.empty?
+      end
+
+      true
+    end
+
+    def check_required_variables
+      if configuration.required_variables
+        missing_keys = missing_keys_env(configuration.required_variables)
+
+        if missing_keys.any?
+          log_message(:error, "EnvChecker: Error missing this required
+            variables: [#{missing_keys}]")
+
+          raise MissingKeysError.new(missing_keys)
+        end
+      end
+
+      true
+    end
+
+    def log_message(type, message)
+      return unless configuration || configuration.logger
+
+      case type
+      when :warning
+        configuration.logger.warn(message)
+      when :error
+        configuration.logger.error(message)
+      else
+        configuration.logger.info(message)
+      end
+    end
+
+    def missing_keys_env(keys)
       keys.flatten - ::ENV.keys
     end
   end
