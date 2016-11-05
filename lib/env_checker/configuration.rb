@@ -1,3 +1,5 @@
+require 'logger'
+
 module EnvChecker
   class Configuration
     # Has default settings, which can be overridden in the initializer.

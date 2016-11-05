@@ -1,4 +1,10 @@
-# Env::Checker
+# Env-checker
+
+[![Gem Version](https://badge.fury.io/rb/env-checker.svg)](https://badge.fury.io/rb/env-checker)
+[![Dependency Status](https://gemnasium.com/badges/github.com/ryanfox1985/env-checker.svg)](https://gemnasium.com/github.com/ryanfox1985/env-checker)
+[![Build Status](https://travis-ci.org/ryanfox1985/env-checker.svg?branch=master)](https://travis-ci.org/ryanfox1985/env-checker)
+[![Coverage Status](https://coveralls.io/repos/github/ryanfox1985/env-checker/badge.svg?branch=master)](https://coveralls.io/github/ryanfox1985/env-checker?branch=master)
+[![Code Climate](https://codeclimate.com/github/ryanfox1985/env-checker/badges/gpa.svg)](https://codeclimate.com/github/ryanfox1985/env-checker)
 
 Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/env_checker`. To experiment with that code, run `bin/console` for an interactive prompt.
 
