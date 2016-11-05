@@ -50,7 +50,11 @@ module EnvChecker
     end
 
     def log_message(type, message)
-      return unless configuration || configuration.logger
+      return unless configuration
+
+      # TODO: add other integrations like slack, email...
+
+      return unless configuration.logger
 
       case type
       when :warning
