@@ -1,16 +1,18 @@
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 
-require "env_checker/version"
-require "env_checker/missing_keys_error"
-require "env_checker/configuration"
+require 'env_checker/version'
+require 'env_checker/missing_keys_error'
+require 'env_checker/configuration'
 
 module EnvChecker
   class << self
     attr_accessor :configuration
 
     def check_environment_variables
-      check_optional_variables &&
-        check_required_variables
+      bov = check_optional_variables
+      brv = check_required_variables
+
+      bov & brv
     end
 
     def configure
@@ -23,7 +25,7 @@ module EnvChecker
     def check_optional_variables
       if configuration.optional_variables
         missing_keys = missing_keys_env(configuration.optional_variables)
-        log_message(:warning, "EnvChecker: Warning missing this optional
+        log_message(:warning, "EnvChecker: Warning missing these optional
           variables: [#{missing_keys}]")
 
         return missing_keys.empty?
@@ -37,7 +39,7 @@ module EnvChecker
         missing_keys = missing_keys_env(configuration.required_variables)
 
         if missing_keys.any?
-          log_message(:error, "EnvChecker: Error missing this required
+          log_message(:error, "EnvChecker: Error missing these required
             variables: [#{missing_keys}]")
 
           raise MissingKeysError.new(missing_keys)
