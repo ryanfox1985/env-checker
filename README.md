@@ -44,8 +44,16 @@ environment variables. Example:
 require 'env_checker'
 
 EnvChecker.configure do |config|
-  config.optional_variables = %w(MyVar1 MyVar2)
-  config.required_variables = %w(MyVar1 MyVar2)
+  config.optional_variables = %w(MyOptVar1 MyOptVar2)
+  config.required_variables = %w(MyReqVar1 MyReqVar2)
+
+  # ENVIRONMENT
+  # ===========
+  # Default is:
+  # environment = ENV['RACK_ENV'] || ENV['RAILS_ENV']
+  #
+  # Other possible value
+  # config.environment = 'MyEnv'  
 
   # LOGGER
   # ======

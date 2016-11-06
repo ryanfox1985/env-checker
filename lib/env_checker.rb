@@ -9,6 +9,8 @@ module EnvChecker
     attr_accessor :configuration
 
     def check_environment_variables
+      return true unless configuration
+
       bov = check_optional_variables
       brv = check_required_variables
 
@@ -23,37 +25,37 @@ module EnvChecker
     private
 
     def check_optional_variables
-      if configuration.optional_variables
-        missing_keys = missing_keys_env(configuration.optional_variables)
-        log_message(:warning, "EnvChecker: Warning missing these optional
-          variables: [#{missing_keys}]")
+      return true unless configuration.optional_variables
 
-        return missing_keys.empty?
-      end
+      missing_keys = missing_keys_env(configuration.optional_variables)
+      log_message(:warning,
+                  configuration.environment,
+                  "Warning! Missing these optional variables: #{missing_keys}")
 
-      true
+      missing_keys.empty?
     end
 
     def check_required_variables
-      if configuration.required_variables
-        missing_keys = missing_keys_env(configuration.required_variables)
+      return true unless configuration.required_variables
 
-        if missing_keys.any?
-          log_message(:error, "EnvChecker: Error missing these required
-            variables: [#{missing_keys}]")
+      missing_keys = missing_keys_env(configuration.required_variables)
 
-          raise MissingKeysError.new(missing_keys)
-        end
+      if missing_keys.any?
+        log_message(:error,
+                    configuration.environment,
+                    "Error! Missing these required variables: #{missing_keys}")
+
+        raise MissingKeysError.new(missing_keys)
       end
 
       true
     end
 
-    def log_message(type, message)
-      return unless configuration
+    def log_message(type, environment, error_message)
+      return unless error_message
 
+      message = format_error_message(environment, error_message)
       # TODO: add other integrations like slack, email...
-
       return unless configuration.logger
 
       case type
@@ -64,6 +66,14 @@ module EnvChecker
       else
         configuration.logger.info(message)
       end
+    end
+
+    def format_error_message(environment, error_message)
+      messages = []
+      messages << '[EnvChecker]'
+      messages << "[#{environment}]" if environment
+      messages << error_message
+      messages.join(' ')
     end
 
     def missing_keys_env(keys)
