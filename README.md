@@ -8,10 +8,21 @@
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/ryanfox1985/env-checker/blob/master/LICENSE)
 
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/env_checker`. To experiment with that code, run `bin/console` for an interactive prompt.
+Don't forget your environment variables when your app changes the environment.
+When you are developing a new feature if your app have some environments like
+test, staging and production is easy to forget an environment variable in the
+middle of the process. Also when you migrate the app to another server is easy
+to forget an environment variable.  
 
-TODO: Delete this and the text above, and describe your gem
+With this gem you can add two list of variables:
+- **Required_variables:** These variables are mandatory (Your app cannot run
+  without these variables, like `DATABASE_URL`)
+- **Optional_variables:** These variables are from secondary services (Your app
+  can run without these variables, like some `THRESHOLD`)
 
+All the missing variables are notified by default in the `STDERR`. When a
+required variable is missing the gem raises an error `MissingKeysError` and
+stops the application.
 
 ## Installation
 
