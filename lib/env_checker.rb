@@ -3,6 +3,7 @@ $LOAD_PATH.unshift(File.dirname(__FILE__))
 require 'env_checker/version'
 require 'env_checker/missing_keys_error'
 require 'env_checker/configuration'
+require 'env_checker/cli'
 
 module EnvChecker
   class << self
@@ -22,7 +23,27 @@ module EnvChecker
       yield(configuration)
     end
 
+    def cli_configure_and_check(options)
+      return if !options[:optional] && !options[:required]
+
+      self.configuration = create_config_from_parameters(options)
+
+      begin
+        check_environment_variables ? exit(true) : exit(1)
+      rescue EnvChecker::MissingKeysError
+        exit 2
+      end
+    end
+
     private
+
+    def create_config_from_parameters(options)
+      config = Configuration.new
+      config.optional_variables = options[:optional] if options[:optional]
+      config.required_variables = options[:required] if options[:required]
+
+      config
+    end
 
     def check_optional_variables
       return true if

@@ -9,8 +9,18 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Guillermo Guerrero Ibarra']
   spec.email         = ['guillermo@guerreroibarra.com']
 
-  spec.summary       = %q{Check your environment variables and don't forget anyone.}
-  spec.description   = %q{Check your environment variables and don't forget anyone.}
+  spec.summary       = <<-EOF
+    Don't forget your environment variables when your app changes the
+    environment.
+  EOF
+
+  spec.description   = <<-EOF
+    When you are developing a new feature if your app have some environments
+    like test, staging and production is easy to forget an environment variable
+    in the middle of the process. Also when you migrate the app to another
+    server is easy to forget an environment variable.
+  EOF
+
   spec.homepage      = 'https://github.com/ryanfox1985/env-checker'
   spec.license       = 'MIT'
 
@@ -20,8 +30,9 @@ Gem::Specification.new do |spec|
   spec.bindir        = 'exe'
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
-  spec.required_ruby_version = '>= 2.0'
+  spec.required_ruby_version = '>= 2.0.0'
 
+  spec.add_runtime_dependency 'thor', '~> 0'
   spec.add_development_dependency 'bundler', '~> 1.13'
   spec.add_development_dependency 'rake', '~> 10.0'
   spec.add_development_dependency 'rspec', '~> 3.0'
