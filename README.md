@@ -92,9 +92,19 @@ end
 ```
 
 
-### Standalone and CLI
+### Standalone and CLI usages
 
-TODO: Write usage instructions here
+#### Check optional and required variables
+
+    $ env-checker check --optional MyOptVar1 MyOptVar2 --required MyReqVar1 MyReqVar2
+
+#### Show help
+
+    $ env-checker help
+
+#### Show version
+
+    $ env-checker version
 
 
 ## Contributing
