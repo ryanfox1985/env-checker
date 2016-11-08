@@ -25,7 +25,9 @@ module EnvChecker
     private
 
     def check_optional_variables
-      return true unless configuration.optional_variables
+      return true if
+        !configuration.optional_variables ||
+        configuration.optional_variables.empty?
 
       missing_keys = missing_keys_env(configuration.optional_variables)
       log_message(:warning,
@@ -36,7 +38,9 @@ module EnvChecker
     end
 
     def check_required_variables
-      return true unless configuration.required_variables
+      return true if
+        !configuration.required_variables ||
+        configuration.required_variables.empty?
 
       missing_keys = missing_keys_env(configuration.required_variables)
 

@@ -14,10 +14,10 @@ test, staging and production is easy to forget an environment variable in the
 middle of the process. Also when you migrate the app to another server is easy
 to forget an environment variable.  
 
-With this gem you can add two list of variables:
-- **Required_variables:** These variables are mandatory (Your app cannot run
+You can define two variable lists:
+- **required_variables:** These variables are mandatory (Your app cannot run
   without these variables, like `DATABASE_URL`)
-- **Optional_variables:** These variables are from secondary services (Your app
+- **optional_variables:** These variables are from secondary services (Your app
   can run without these variables, like some `THRESHOLD`)
 
 All the missing variables are notified by default in the `STDERR`. When a
