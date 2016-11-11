@@ -7,6 +7,38 @@ describe EnvChecker do
     expect(EnvChecker.check_environment_variables).to be true
   end
 
+  it 'not valid configuration required_variables as String' do
+    expect do
+      EnvChecker.configure do |config|
+        config.required_variables = 'Potato'
+      end
+    end.to raise_error(EnvChecker::ConfigurationError)
+  end
+
+  it 'not valid configuration optional_variables as String' do
+    expect do
+      EnvChecker.configure do |config|
+        config.optional_variables = 'Potato'
+      end
+    end.to raise_error(EnvChecker::ConfigurationError)
+  end
+
+  it 'not valid configuration slack_webhook_url as array' do
+    expect do
+      EnvChecker.configure do |config|
+        config.slack_webhook_url = %(Potato)
+      end
+    end.to raise_error(EnvChecker::ConfigurationError)
+  end
+
+  it 'not valid configuration slack_webhook_url badformated URL' do
+    expect do
+      EnvChecker.configure do |config|
+        config.slack_webhook_url = 'potato_no_url'
+      end
+    end.to raise_error(EnvChecker::ConfigurationError)
+  end
+
   ENV_VARIABLES = [
     %w(),
     %w(MyVar1 OptMyVar1),

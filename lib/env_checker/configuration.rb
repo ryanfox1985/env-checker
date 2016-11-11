@@ -1,5 +1,6 @@
 require 'logger'
 require 'slack-notifier'
+require 'uri'
 
 module EnvChecker
   class ConfigurationError < StandardError; end
@@ -18,15 +19,30 @@ module EnvChecker
       @logger = Logger.new(STDERR)
     end
 
-    def valid?
-      # TODO: check types and raise invalid config
-      true
-    end
-
     def after_initialize
+      valid?
+
       @slack_webhook_url &&
         @slack_webhook_url != '' &&
         @slack_notifier = Slack::Notifier.new(@slack_webhook_url)
+
+      true
+    end
+
+    private
+
+    def valid?
+      if required_variables && required_variables.class != Array
+        raise ConfigurationError.new("Invalid value required_variables: #{required_variables}")
+      end
+
+      if optional_variables && optional_variables.class != Array
+        raise ConfigurationError.new("Invalid value optional_variables: #{optional_variables}")
+      end
+
+      if slack_webhook_url && slack_webhook_url != ~ URI.regexp
+        raise ConfigurationError.new("Invalid value slack_webhook_url: #{slack_webhook_url}")
+      end
 
       true
     end

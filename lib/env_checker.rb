@@ -22,9 +22,7 @@ module EnvChecker
     def configure
       self.configuration = Configuration.new
       yield(configuration)
-
-      configuration.valid? &&
-        configuration.after_initialize
+      configuration.after_initialize
     end
 
     def cli_configure_and_check(options)
@@ -35,9 +33,12 @@ module EnvChecker
       self.configuration = create_config_from_parameters(options)
 
       begin
+        configuration.after_initialize
         check_environment_variables ? exit(true) : exit(1)
       rescue EnvChecker::MissingKeysError
         exit 2
+      rescue EnvChecker::ConfigurationError
+        exit 3
       end
     end
 

@@ -18,7 +18,7 @@ module EnvChecker
 
       variables = %w(config_file slack_webhook_url optional required)
       variables.each do |v|
-        # TODO: get config variables from current environment
+        # TODO: get config variables from current environment
         # options[v.to_sym] ||= ENV[v.to_sym] if ENV[v.to_sym]
         output << "- #{v}: #{options[v.to_sym]}" if options[v.to_sym]
       end
