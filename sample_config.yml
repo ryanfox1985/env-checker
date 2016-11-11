@@ -1,0 +1,6 @@
+optional_variables:
+  - MyOptVar1
+  - MyOptVar2
+required_variables:
+  - MyReqVar1
+  - MyReqVar2  

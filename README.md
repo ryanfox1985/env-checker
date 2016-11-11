@@ -96,7 +96,13 @@ end
 
 #### Check optional and required variables
 
+Inline passing the variables with the shell:
+
     $ env-checker check --optional MyOptVar1 MyOptVar2 --required MyReqVar1 MyReqVar2
+
+Example with a `.yml` [example file](https://raw.githubusercontent.com/ryanfox1985/env-checker/master/sample_config.yml):
+
+    $ env-checker check --config_file sample_config.yml
 
 #### Show help
 

@@ -2,4 +2,4 @@
 
 require 'env_checker'
 
-CLI.start(ARGV)
+EnvChecker::CLI.start(ARGV)

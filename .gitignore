@@ -21,6 +21,7 @@ build/
 build-iPhoneOS/
 build-iPhoneSimulator/
 .ruby-gemset
+.byebug_history
 
 ## Specific to RubyMotion (use of CocoaPods):
 #

@@ -1,5 +1,6 @@
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 
+require 'yaml'
 require 'env_checker/version'
 require 'env_checker/missing_keys_error'
 require 'env_checker/configuration'
@@ -19,12 +20,14 @@ module EnvChecker
     end
 
     def configure
-      self.configuration ||= Configuration.new
+      self.configuration = Configuration.new
       yield(configuration)
     end
 
     def cli_configure_and_check(options)
-      return if !options[:optional] && !options[:required]
+      return if !options[:optional] &&
+                !options[:required] &&
+                !options[:config_file]
 
       self.configuration = create_config_from_parameters(options)
 
@@ -39,6 +42,15 @@ module EnvChecker
 
     def create_config_from_parameters(options)
       config = Configuration.new
+
+      if options[:config_file]
+        from_file = YAML.load_file(options[:config_file])
+        config.optional_variables = from_file['optional_variables']
+        config.required_variables = from_file['required_variables']
+
+        return config
+      end
+
       config.optional_variables = options[:optional] if options[:optional]
       config.required_variables = options[:required] if options[:required]
 

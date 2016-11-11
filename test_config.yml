@@ -1,0 +1,7 @@
+---
+optional_variables:
+- OptMyVar1
+- OptMyVar2
+required_variables:
+- MyVar1
+- MyVar2
