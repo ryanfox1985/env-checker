@@ -22,6 +22,9 @@ module EnvChecker
     def configure
       self.configuration = Configuration.new
       yield(configuration)
+
+      configuration.valid? &&
+        configuration.after_initialize
     end
 
     def cli_configure_and_check(options)
@@ -47,12 +50,14 @@ module EnvChecker
         from_file = YAML.load_file(options[:config_file])
         config.optional_variables = from_file['optional_variables']
         config.required_variables = from_file['required_variables']
+        config.slack_webhook_url = from_file['slack_webhook_url']
 
         return config
       end
 
       config.optional_variables = options[:optional] if options[:optional]
       config.required_variables = options[:required] if options[:required]
+      config.slack_webhook_url = options[:slack] if options[:slack]
 
       config
     end
@@ -63,11 +68,13 @@ module EnvChecker
         configuration.optional_variables.empty?
 
       missing_keys = missing_keys_env(configuration.optional_variables)
+      return true if missing_keys.empty?
+
       log_message(:warning,
                   configuration.environment,
-                  "Warning! Missing these optional variables: #{missing_keys}")
+                  "Warning! Missing optional variables: #{missing_keys}")
 
-      missing_keys.empty?
+      false
     end
 
     def check_required_variables
@@ -80,7 +87,7 @@ module EnvChecker
       if missing_keys.any?
         log_message(:error,
                     configuration.environment,
-                    "Error! Missing these required variables: #{missing_keys}")
+                    "Error! Missing required variables: #{missing_keys}")
 
         raise MissingKeysError.new(missing_keys)
       end
@@ -92,20 +99,25 @@ module EnvChecker
       return unless error_message
 
       message = format_error_message(environment, error_message)
-      # TODO: add other integrations like slack, email...
-      return unless configuration.logger
 
-      case type
-      when :warning
-        configuration.logger.warn(message)
-      when :error
-        configuration.logger.error(message)
-      else
-        configuration.logger.info(message)
-      end
+      configuration.slack_notifier &&
+        configuration.slack_notifier.ping(message)
+      # TODO: add other integrations like email...
+
+      configuration.logger &&
+        case type
+        when :warning
+          configuration.logger.warn(message)
+        when :error
+          configuration.logger.error(message)
+        else
+          configuration.logger.info(message)
+        end
     end
 
     def format_error_message(environment, error_message)
+      return [] unless error_message
+
       messages = []
       messages << '[EnvChecker]'
       messages << "[#{environment}]" if environment

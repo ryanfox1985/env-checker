@@ -55,6 +55,7 @@ environment variables. Example:
 require 'env_checker'
 
 EnvChecker.configure do |config|
+  config.slack_webhook_url = 'https://hooks.slack.com/services/.../.../.../'
   config.optional_variables = %w(MyOptVar1 MyOptVar2)
   config.required_variables = %w(MyReqVar1 MyReqVar2)
 
