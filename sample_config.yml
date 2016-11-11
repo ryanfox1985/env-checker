@@ -3,4 +3,6 @@ optional_variables:
   - MyOptVar2
 required_variables:
   - MyReqVar1
-  - MyReqVar2  
+  - MyReqVar2
+
+slack_webhook_url: https://hooks.slack.com/services/.../.../...
