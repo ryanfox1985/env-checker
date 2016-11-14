@@ -78,18 +78,6 @@ EnvChecker.configure do |config|
   # config.logger = Logger.new('log/env_checker.log')   # Use this file
   # config.logger = Logger.new('/dev/null')             # Don't log at all (on a Unix system)
 end
-
-# Example to run always
-[YOUR_APP]::Application.config.after_initialize do
-  EnvChecker.check_environment_variables
-end
-
-# Example to run in specific environments
-if Rails.env.production? || Rails.env.test?
-  [YOUR_APP]::Application.config.after_initialize do
-    EnvChecker.check_environment_variables
-  end
-end
 ```
 
 
