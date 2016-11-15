@@ -40,11 +40,18 @@ module EnvChecker
         raise ConfigurationError.new("Invalid value optional_variables: #{optional_variables}")
       end
 
-      if slack_webhook_url && slack_webhook_url != ~ URI.regexp
+      unless valid_url?(slack_webhook_url)
         raise ConfigurationError.new("Invalid value slack_webhook_url: #{slack_webhook_url}")
       end
 
       true
+    end
+
+    def valid_url?(uri)
+      return true unless uri
+
+      valid = (uri =~ URI.regexp(%w(http https)))
+      valid && valid.zero?
     end
   end
 end

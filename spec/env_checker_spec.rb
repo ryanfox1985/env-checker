@@ -29,6 +29,20 @@ describe EnvChecker do
     end.to raise_error(EnvChecker::ConfigurationError)
   end
 
+  it 'valid configuration slack_webhook_url' do
+    expect(
+      EnvChecker.configure do |config|
+        config.slack_webhook_url = 'http://hooks.slack.com/services/xxxx/xxxx/xxxx'
+      end
+    ).to be(true)
+
+    expect(
+      EnvChecker.configure do |config|
+        config.slack_webhook_url = 'https://hooks.slack.com/services/xxxx/xxxx/xxxx'
+      end
+    ).to be(true)
+  end
+
   it 'not valid configuration slack_webhook_url badformated URL' do
     expect do
       EnvChecker.configure do |config|

@@ -57,6 +57,7 @@ module EnvChecker
         return { 'global' => config }
       end
 
+      config.environment = options[:environment] if options[:environment]
       config.optional_variables = options[:optional] if options[:optional]
       config.required_variables = options[:required] if options[:required]
       config.slack_webhook_url = options[:slack] if options[:slack]

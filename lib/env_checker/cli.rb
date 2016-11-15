@@ -7,9 +7,10 @@ module EnvChecker
       puts "EnvChecker #{EnvChecker::VERSION}"
     end
 
+    option :environment, :aliases => :e, :type => :string
     option :config_file, :aliases => :cf, :type => :string
-    option :required, :aliases => :r, :type => :array
-    option :optional, :aliases => :o, :type => :array
+    option :required_variables, :aliases => [:r, :required], :type => :array
+    option :optional_variables, :aliases => [:o, :optional], :type => :array
     option :slack_webhook_url, :aliases => :slack, :type => :string
     desc 'check', 'Check optional and required environment variables.'
     def check
