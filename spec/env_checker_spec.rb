@@ -59,11 +59,16 @@ describe EnvChecker do
 
   ENV_VARIABLES.each do |variables|
     context "#{variables} variables defined" do
-      before(:all) { variables.each { |var| ENV[var] = var } }
-      after(:all) { variables.each { |var| ENV.delete(var) } }
+      before(:all) do
+        variables.each { |var| ENV[var.upcase] = "value_from_#{var}" }
+      end
+
+      after(:all) do
+        variables.each { |var| ENV.delete(var.upcase) }
+      end
 
       it 'check 2 optional variables' do
-        if ENV.key?('MyVar1') && ENV.key?('MyVar2')
+        if ENV.key?('MYVAR1') && ENV.key?('MYVAR2')
           expect(EnvChecker.configure do |config|
             config.required_variables = []
             config.optional_variables = %w(MyVar1 MyVar2)
@@ -78,7 +83,7 @@ describe EnvChecker do
       end
 
       it 'check 2 required variables' do
-        if ENV.key?('MyVar1') && ENV.key?('MyVar2')
+        if ENV.key?('MYVAR1') && ENV.key?('MYVAR2')
           expect(EnvChecker.configure do |config|
             config.optional_variables = []
             config.required_variables = %w(MyVar1 MyVar2)
@@ -95,7 +100,7 @@ describe EnvChecker do
       end
 
       it 'check 2 optional and required variables' do
-        if ENV.key?('MyVar1') && ENV.key?('MyVar2')
+        if ENV.key?('MYVAR1') && ENV.key?('MYVAR2')
           expect(EnvChecker.configure do |config|
             config.optional_variables = %w(OptMyVar1 OptMyVar2)
             config.required_variables = %w(MyVar1 MyVar2)
