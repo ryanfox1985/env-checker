@@ -20,6 +20,9 @@ You can define two variable lists:
 - **optional_variables:** These variables are from secondary services (Your app
   can run without these variables, like some `THRESHOLD`)
 
+By default `EnvChecker` checks the global environment and after the current
+or set environment.
+
 All the missing variables are notified by default in the `STDERR`. When a
 required variable is missing the gem raises an error `MissingKeysError` and
 stops the application.
@@ -88,6 +91,18 @@ end
 Inline passing the variables with the shell:
 
     $ env-checker check --optional MyOptVar1 MyOptVar2 --required MyReqVar1 MyReqVar2
+
+    Usage:
+      env-checker check
+
+    Options:
+      e, [--environment=ENVIRONMENT]
+      cf, [--config-file=CONFIG_FILE]
+      r, required, [--required-variables=one two three]
+      o, optional, [--optional-variables=one two three]
+      slack, [--slack-webhook-url=SLACK_WEBHOOK_URL]
+              [--run=RUN]
+
 
 Example with a `.yml` [example file](https://raw.githubusercontent.com/ryanfox1985/env-checker/master/sample_config.yml):
 
