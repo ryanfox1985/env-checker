@@ -24,6 +24,9 @@ All the missing variables are notified by default in the `STDERR`. When a
 required variable is missing the gem raises an error `MissingKeysError` and
 stops the application.
 
+By convention all the environment variable names must be in up case, the gem
+internally parse the required_variables and optional_variables to up case.
+
 ## Installation
 
 Add this line to your application's Gemfile:

@@ -26,6 +26,12 @@ module EnvChecker
         @slack_webhook_url != '' &&
         @slack_notifier = Slack::Notifier.new(@slack_webhook_url)
 
+      @required_variables &&
+        @required_variables = @required_variables.map(&:upcase)
+
+      @optional_variables &&
+        @optional_variables = @optional_variables.map(&:upcase)
+
       true
     end
 
