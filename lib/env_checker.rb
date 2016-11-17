@@ -5,6 +5,7 @@ require 'env_checker/version'
 require 'env_checker/missing_keys_error'
 require 'env_checker/configuration'
 require 'env_checker/cli'
+require 'byebug'
 
 module EnvChecker
   class << self
@@ -18,23 +19,32 @@ module EnvChecker
     end
 
     def cli_configure_and_check(options)
-      return if !options[:optional] &&
-                !options[:required] &&
-                !options[:config_file]
+      if run_configure_and_check(options) && options[:run]
+        exit(system(options[:run]))
+      end
+
+      exit(true)
+    end
+
+    private
+
+    def run_configure_and_check(options)
+      return true if !options[:optional_variables] &&
+                     !options[:required_variables] &&
+                     !options[:config_file]
 
       self.configurations = create_config_from_parameters(options)
 
       begin
         exit(1) unless after_configure_and_check(configurations['global'])
-        exit(true)
       rescue EnvChecker::MissingKeysError
         exit 2
       rescue EnvChecker::ConfigurationError
         exit 3
       end
-    end
 
-    private
+      true
+    end
 
     def after_configure_and_check(configuration)
       configuration.after_initialize
@@ -58,9 +68,17 @@ module EnvChecker
       end
 
       config.environment = options[:environment] if options[:environment]
-      config.optional_variables = options[:optional] if options[:optional]
-      config.required_variables = options[:required] if options[:required]
-      config.slack_webhook_url = options[:slack] if options[:slack]
+      if options[:optional_variables]
+        config.optional_variables = options[:optional_variables]
+      end
+
+      if options[:required_variables]
+        config.required_variables = options[:required_variables]
+      end
+
+      if options[:slack_webhook_url]
+        config.slack_webhook_url = options[:slack_webhook_url]
+      end
 
       { 'global' => config }
     end

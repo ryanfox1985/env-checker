@@ -12,20 +12,34 @@ module EnvChecker
     option :required_variables, :aliases => [:r, :required], :type => :array
     option :optional_variables, :aliases => [:o, :optional], :type => :array
     option :slack_webhook_url, :aliases => :slack, :type => :string
+    option :run, :type => :string
     desc 'check', 'Check optional and required environment variables.'
     def check
       output = []
       output << 'Variables: '
 
-      variables = %w(config_file slack_webhook_url optional required)
+      variables = %w(config_file
+                     slack_webhook_url
+                     environment
+                     run
+                     optional_variables
+                     required_variables)
+
+      my_options = {}
       variables.each do |v|
-        # TODO: get config variables from current environment
-        # options[v.to_sym] ||= ENV[v.to_sym] if ENV[v.to_sym]
-        output << "- #{v}: #{options[v.to_sym]}" if options[v.to_sym]
+        if ENV[v.upcase]
+          my_options[v.to_sym] ||= if v.upcase.include?('VARIABLES')
+                                     ENV[v.upcase].split(' ')
+                                   else
+                                     ENV[v.upcase]
+                                   end
+        end
+        my_options[v.to_sym] = options[v.to_sym] if options[v.to_sym]
+        output << "- #{v}: #{my_options[v.to_sym]}" if my_options[v.to_sym]
       end
       puts output.join("\n")
 
-      EnvChecker.cli_configure_and_check(options)
+      EnvChecker.cli_configure_and_check(my_options)
     end
   end
 end

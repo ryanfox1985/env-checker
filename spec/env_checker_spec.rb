@@ -99,6 +99,23 @@ describe EnvChecker do
         end
       end
 
+      it 'cli check 2 required variables' do
+        options = {
+          optional_variables: [],
+          required_variables: %w(MyVar1 MyVar2)
+        }
+
+        if ENV.key?('MyVar1') && ENV.key?('MyVar2')
+          expect(EnvChecker.cli_configure_and_check(options))
+            .to be true
+        else
+          expect do
+            EnvChecker.cli_configure_and_check(options)
+          end.to raise_error(SystemExit)
+          # TODO: check call logger and contains the 2 variables
+        end
+      end
+
       it 'check 2 optional and required variables' do
         if ENV.key?('MYVAR1') && ENV.key?('MYVAR2')
           expect(EnvChecker.configure do |config|
