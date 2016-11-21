@@ -58,26 +58,23 @@ module EnvChecker
     def create_config_from_parameters(options)
       config = Configuration.new
 
+      attributes = %w(environment
+                      optional_variables
+                      required_variables
+                      slack_webhook_url)
+
       if options[:config_file]
         from_file = YAML.load_file(options[:config_file])
-        config.optional_variables = from_file['optional_variables']
-        config.required_variables = from_file['required_variables']
-        config.slack_webhook_url = from_file['slack_webhook_url']
+
+        attributes.each do |a|
+          config.public_send("#{a}=", from_file[a]) if from_file[a]
+        end
 
         return { 'global' => config }
       end
 
-      config.environment = options[:environment] if options[:environment]
-      if options[:optional_variables]
-        config.optional_variables = options[:optional_variables]
-      end
-
-      if options[:required_variables]
-        config.required_variables = options[:required_variables]
-      end
-
-      if options[:slack_webhook_url]
-        config.slack_webhook_url = options[:slack_webhook_url]
+      attributes.each do |a|
+        config.public_send("#{a}=", options[a.to_sym]) if options[a.to_sym]
       end
 
       { 'global' => config }
@@ -123,19 +120,9 @@ module EnvChecker
 
       message = format_error_message(environment, error_message)
 
-      configuration.slack_notifier &&
-        configuration.slack_notifier.ping(message)
+      configuration.notify_slack(message)
       # TODO: add other integrations like email...
-
-      configuration.logger &&
-        case type
-        when :warning
-          configuration.logger.warn(message)
-        when :error
-          configuration.logger.error(message)
-        else
-          configuration.logger.info(message)
-        end
+      configuration.notify_logger(type, message)
     end
 
     def format_error_message(environment, error_message)

@@ -93,23 +93,36 @@ end
 
 Inline passing the variables with the shell:
 
-    $ env-checker check --optional MyOptVar1 MyOptVar2 --required MyReqVar1 MyReqVar2
+```shell
+$ env-checker check --optional MyOptVar1 MyOptVar2 --required MyReqVar1 MyReqVar2
 
-    Usage:
-      env-checker check
+Usage:
+  env-checker check
 
-    Options:
-      e, [--environment=ENVIRONMENT]
-      cf, [--config-file=CONFIG_FILE]
-      r, required, [--required-variables=one two three]
-      o, optional, [--optional-variables=one two three]
-      slack, [--slack-webhook-url=SLACK_WEBHOOK_URL]
-              [--run=RUN]
+Options:
+  e, [--environment=ENVIRONMENT]
+  cf, [--config-file=CONFIG_FILE]
+  r, required, [--required-variables=one two three]
+  o, optional, [--optional-variables=one two three]
+  slack, [--slack-webhook-url=SLACK_WEBHOOK_URL]
+          [--run=RUN]
+```
 
+- All the parameters can be set by environment variables like:
 
-Example with a `.yml` [example file](https://raw.githubusercontent.com/ryanfox1985/env-checker/master/sample_config.yml):
+```shell
+$ export ENV_CHECKER_ENVIRONMENT=staging
+$ export ENV_CHECKER_REQUIRED_VARIABLES=one two three
+$ export ENV_CHECKER_OPTIONAL_VARIABLES=one two three
+$ export ENV_CHECKER_SLACK_WEBHOOK_URL=https://hooks.slack.com/services/.../.../.../
+$ env-checker check
+```
 
-    $ env-checker check --config_file sample_config.yml
+- Example with a `.yml` [example file](https://raw.githubusercontent.com/ryanfox1985/env-checker/master/sample_config.yml):
+
+```shell
+$ env-checker check --config_file sample_config.yml
+```
 
 #### Show help
 
