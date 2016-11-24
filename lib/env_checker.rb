@@ -5,7 +5,6 @@ require 'env_checker/version'
 require 'env_checker/missing_keys_error'
 require 'env_checker/configuration'
 require 'env_checker/cli'
-require 'byebug'
 
 module EnvChecker
   class << self
