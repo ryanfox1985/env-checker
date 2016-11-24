@@ -1,3 +1,8 @@
+environments:
+  - staging
+  - production
+  - test
+
 optional_variables:
   - MyOptVar1
   - MyOptVar2
@@ -6,3 +11,23 @@ required_variables:
   - MyReqVar2
 
 slack_webhook_url: https://hooks.slack.com/services/.../.../...
+
+staging:
+  optional_variables:
+    - Staging_MyOptVar1
+    - Staging_MyOptVar2
+  required_variables:
+    - Staging_MyReqVar1
+    - Staging_MyReqVar2
+
+  slack_webhook_url: https://hooks.slack.com/services/.../.../...
+
+production:
+  optional_variables:
+    - Production_MyOptVar1
+    - Production_MyOptVar2
+  required_variables:
+    - Production_MyReqVar1
+    - Production_MyReqVar2
+
+  slack_webhook_url: https://hooks.slack.com/services/.../.../...

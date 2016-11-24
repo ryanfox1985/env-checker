@@ -27,11 +27,12 @@ module EnvChecker
 
       my_options = {}
       variables.each do |v|
-        if ENV[v.upcase]
-          my_options[v.to_sym] ||= if v.upcase.include?('VARIABLES')
-                                     ENV[v.upcase].split(' ')
+        env_var_name = "env_checker_#{v}".upcase
+        if ENV[env_var_name]
+          my_options[v.to_sym] ||= if env_var_name.include?('_VARIABLES')
+                                     ENV[env_var_name].split(' ')
                                    else
-                                     ENV[v.upcase]
+                                     ENV[env_var_name]
                                    end
         end
         my_options[v.to_sym] = options[v.to_sym] if options[v.to_sym]

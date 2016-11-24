@@ -35,6 +35,24 @@ module EnvChecker
       true
     end
 
+    def notify_slack(message)
+      slack_notifier && slack_notifier.ping(message)
+    rescue StandardError => e
+      notify_logger(:error, e)
+    end
+
+    def notify_logger(type, message)
+      logger &&
+        case type
+        when :warning
+          logger.warn(message)
+        when :error
+          logger.error(message)
+        else
+          logger.info(message)
+        end
+    end
+
     private
 
     def valid?
