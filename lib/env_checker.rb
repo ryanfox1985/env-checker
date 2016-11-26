@@ -5,6 +5,7 @@ require 'env_checker/version'
 require 'env_checker/missing_keys_error'
 require 'env_checker/configuration'
 require 'env_checker/cli'
+require 'env_checker/notifier'
 
 module EnvChecker
   class << self
@@ -14,13 +15,12 @@ module EnvChecker
       self.configurations ||= {}
       configurations['global'] = Configuration.new
       yield(configurations['global'])
-      after_configure_and_check(configurations['global'])
+      after_configure_and_check(configurations)
     end
 
     def cli_configure_and_check(options)
-      if run_configure_and_check(options) && options[:run]
+      run_configure_and_check(options) && options[:run] &&
         exit(system(options[:run]))
-      end
 
       exit(true)
     end
@@ -35,7 +35,9 @@ module EnvChecker
       self.configurations = create_config_from_parameters(options)
 
       begin
-        exit(1) unless after_configure_and_check(configurations['global'])
+        unless after_configure_and_check(configurations)
+          exit(options[:run] ? system(options[:run]) : 1)
+        end
       rescue EnvChecker::MissingKeysError
         exit 2
       rescue EnvChecker::ConfigurationError
@@ -45,19 +47,26 @@ module EnvChecker
       true
     end
 
-    def after_configure_and_check(configuration)
-      configuration.after_initialize
+    def after_configure_and_check(configurations)
+      environments_to_check = %w(global)
 
-      bov = check_optional_variables(configuration)
-      brv = check_required_variables(configuration)
+      current_env = configurations['global'].environment
+      if current_env && configurations.key?(current_env)
+        environments_to_check << current_env
+      end
 
-      bov & brv
+      environments_to_check.map do |env|
+        configurations[env].after_initialize
+
+        check_optional_variables(env, configurations) &
+          check_required_variables(env, configurations)
+      end.reduce(:&)
     end
 
     def create_config_from_parameters(options)
-      config = Configuration.new
-
-      attributes = %w(environment
+      configurations = { 'global' => Configuration.new }
+      attributes = %w(environments
+                      environment
                       optional_variables
                       required_variables
                       slack_webhook_url)
@@ -65,73 +74,71 @@ module EnvChecker
       if options[:config_file]
         from_file = YAML.load_file(options[:config_file])
 
-        attributes.each do |a|
-          config.public_send("#{a}=", from_file[a]) if from_file[a]
+        configurations = config_from_file('global', attributes, from_file)
+        if configurations['global'].environments.any?
+          configurations['global'].environments.each do |env|
+            configurations
+              .merge!(config_from_file(env, attributes, from_file[env]))
+          end
         end
-
-        return { 'global' => config }
       end
 
       attributes.each do |a|
-        config.public_send("#{a}=", options[a.to_sym]) if options[a.to_sym]
+        options[a.to_sym] &&
+          configurations['global'].public_send("#{a}=", options[a.to_sym])
       end
 
-      { 'global' => config }
+      configurations
     end
 
-    def check_optional_variables(configuration)
-      return true if
-        !configuration.optional_variables ||
-        configuration.optional_variables.empty?
+    def config_from_file(name, attributes, from_file)
+      return { name => Configuration.new } unless from_file
 
-      missing_keys = missing_keys_env(configuration.optional_variables)
+      config = Configuration.new
+      attributes.each do |a|
+        config.public_send("#{a}=", from_file[a]) if from_file[a]
+      end
+
+      { name => config }
+    end
+
+    def check_optional_variables(env, configurations)
+      return true if
+        !configurations[env].optional_variables ||
+        configurations[env].optional_variables.empty?
+
+      missing_keys = missing_keys_env(configurations[env].optional_variables)
       return true if missing_keys.empty?
 
-      log_message(configuration,
-                  :warning,
-                  configuration.environment,
-                  "Warning! Missing optional variables: #{missing_keys}")
+      Notifier.log_message(
+        configurations[env],
+        :warning,
+        env,
+        "Warning! Missing optional variables: #{missing_keys}"
+      )
 
       false
     end
 
-    def check_required_variables(configuration)
+    def check_required_variables(env, configurations)
       return true if
-        !configuration.required_variables ||
-        configuration.required_variables.empty?
+        !configurations[env].required_variables ||
+        configurations[env].required_variables.empty?
 
-      missing_keys = missing_keys_env(configuration.required_variables)
+      missing_keys = missing_keys_env(configurations[env].required_variables)
 
       if missing_keys.any?
-        log_message(configuration,
-                    :error,
-                    configuration.environment,
-                    "Error! Missing required variables: #{missing_keys}")
+        Notifier.log_message(
+          configurations[env],
+          :error,
+          env,
+          "Error! Missing required variables: #{missing_keys}"
+        )
 
         raise MissingKeysError.new(missing_keys)
       end
 
       true
-    end
-
-    def log_message(configuration, type, environment, error_message)
-      return unless error_message
-
-      message = format_error_message(environment, error_message)
-
-      configuration.notify_slack(message)
-      # TODO: add other integrations like email...
-      configuration.notify_logger(type, message)
-    end
-
-    def format_error_message(environment, error_message)
-      return [] unless error_message
-
-      messages = []
-      messages << '[EnvChecker]'
-      messages << "[#{environment}]" if environment
-      messages << error_message
-      messages.join(' ')
     end
 
     def missing_keys_env(keys)

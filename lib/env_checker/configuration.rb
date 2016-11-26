@@ -7,11 +7,13 @@ module EnvChecker
 
   class Configuration
     attr_accessor :required_variables, :optional_variables, :logger,
-                  :environment, :slack_webhook_url, :slack_notifier
+                  :environment, :slack_webhook_url, :slack_notifier,
+                  :environments
 
     # Has default settings, which can be overridden in the initializer.
     def initialize
       @environment = ENV['RACK_ENV'] || ENV['RAILS_ENV']
+      @environments = []
       @required_variables = []
       @optional_variables = []
       @slack_webhook_url = nil
@@ -33,24 +35,6 @@ module EnvChecker
         @optional_variables = @optional_variables.map(&:upcase)
 
       true
-    end
-
-    def notify_slack(message)
-      slack_notifier && slack_notifier.ping(message)
-    rescue StandardError => e
-      notify_logger(:error, e)
-    end
-
-    def notify_logger(type, message)
-      logger &&
-        case type
-        when :warning
-          logger.warn(message)
-        when :error
-          logger.error(message)
-        else
-          logger.info(message)
-        end
     end
 
     private

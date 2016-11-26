@@ -5,6 +5,7 @@ module EnvChecker
     desc 'version', 'EnvChecker version.'
     def version
       puts "EnvChecker #{EnvChecker::VERSION}"
+      EnvChecker::VERSION
     end
 
     option :environment, :aliases => :e, :type => :string
@@ -12,11 +13,11 @@ module EnvChecker
     option :required_variables, :aliases => [:r, :required], :type => :array
     option :optional_variables, :aliases => [:o, :optional], :type => :array
     option :slack_webhook_url, :aliases => :slack, :type => :string
+    option :verbose, :aliases => :v, :type => :boolean, :default => false
     option :run, :type => :string
     desc 'check', 'Check optional and required environment variables.'
     def check
-      output = []
-      output << 'Variables: '
+      output = %w(Variables:)
 
       variables = %w(config_file
                      slack_webhook_url
@@ -30,7 +31,10 @@ module EnvChecker
         env_var_name = "env_checker_#{v}".upcase
         if ENV[env_var_name]
           my_options[v.to_sym] ||= if env_var_name.include?('_VARIABLES')
-                                     ENV[env_var_name].split(' ')
+                                     ENV[env_var_name]
+                                       .split(' ')
+                                       .map { |elem| elem.split(',') }
+                                       .flatten
                                    else
                                      ENV[env_var_name]
                                    end
@@ -38,7 +42,8 @@ module EnvChecker
         my_options[v.to_sym] = options[v.to_sym] if options[v.to_sym]
         output << "- #{v}: #{my_options[v.to_sym]}" if my_options[v.to_sym]
       end
-      puts output.join("\n")
+
+      puts output.join("\n") if options[:verbose]
 
       EnvChecker.cli_configure_and_check(my_options)
     end

@@ -135,7 +135,7 @@ $ env-checker check --config_file sample_config.yml
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/ryanfox1985/env-checker. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/ryanfox1985/env-checker/issues and https://github.com/ryanfox1985/env-checker/pulls. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 
 ## License
