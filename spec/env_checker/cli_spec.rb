@@ -61,6 +61,6 @@ describe EnvChecker::CLI do
       described_class.start(args)
     end.to raise_error(SystemExit)
 
-    expect(EnvChecker.configurations.size).to eq 4
+    expect(EnvChecker.configuration.configurations.size).to eq 3
   end
 end

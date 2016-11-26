@@ -36,7 +36,7 @@ module EnvChecker
         configuration.slack_notifier &&
           configuration.slack_notifier.ping(message)
       rescue StandardError => e
-        notify_logger(:error, e)
+        notify_logger(configuration, :error, e)
       end
 
       def notify_logger(configuration, type, message)

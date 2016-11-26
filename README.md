@@ -52,6 +52,8 @@ Or install it yourself as:
 
 ### Rails or Ruby standalone
 
+#### Configuration in the initializer
+
 Create a initializer to configure the gem and run the hook to check the
 environment variables. Example:
 
@@ -86,6 +88,19 @@ EnvChecker.configure do |config|
 end
 ```
 
+#### Configuration using YAML file
+
+Create a initializer to configure the YAML file. Example:
+
+```ruby
+# config/initializers/env_checker.rb
+
+require 'env_checker'
+
+EnvChecker.configure do |config|
+  config.config_file = 'config/env-checker.yml'  
+end
+```
 
 ### Standalone and CLI usages
 

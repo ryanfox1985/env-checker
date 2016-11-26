@@ -14,7 +14,7 @@ Gem::Specification.new do |spec|
     environment.
   EOF
 
-  spec.description   = <<-EOF
+  spec.description = <<-EOF
     When you are developing a new feature if your app have some environments
     like test, staging and production is easy to forget an environment variable
     in the middle of the process. Also when you migrate the app to another

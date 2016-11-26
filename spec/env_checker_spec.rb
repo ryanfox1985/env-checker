@@ -105,13 +105,13 @@ describe EnvChecker do
           required_variables: %w(MyVar1 MyVar2)
         }
 
-        if ENV.key?('MyVar1') && ENV.key?('MyVar2')
+        if ENV.key?('MYVAR1') && ENV.key?('MYVAR2')
           expect(EnvChecker.cli_configure_and_check(options))
             .to be true
         else
           expect do
             EnvChecker.cli_configure_and_check(options)
-          end.to raise_error(SystemExit)
+          end.to raise_error(EnvChecker::MissingKeysError)
           # TODO: check call logger and contains the 2 variables
         end
       end
